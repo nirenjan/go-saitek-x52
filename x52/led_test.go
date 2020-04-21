@@ -123,3 +123,26 @@ func TestLeds(t *testing.T) {
 		}
 	}
 }
+
+func TestLEDBrightness(t *testing.T) {
+	updateMask := uint32(1 << updateBrightnessLED)
+	ctx := NewContext()
+	defer ctx.Close()
+
+	for i := uint16(0); i <= 0x80; i++ {
+		ctx.updateMask = 0
+		err := ctx.SetLEDBrightness(i)
+		if err != nil {
+			t.Errorf("Unexpected error setting LED brightness to %v: %v", i, err)
+			continue
+		}
+
+		if ctx.updateMask != updateMask {
+			t.Errorf("Update mask wrong value - exp %v, got %v", updateMask, ctx.updateMask)
+		}
+
+		if ctx.ledBrightness != i {
+			t.Errorf("LED Brightness wrong value - exp %v, got %v", i, ctx.ledBrightness)
+		}
+	}
+}
