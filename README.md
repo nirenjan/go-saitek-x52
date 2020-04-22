@@ -14,3 +14,4 @@ the joystick, but it cannot control the MFD or LEDs.
 Most of the extra functionality can be handled from userspace. See the
 individual folders for README information.
 
+This project is a rewrite of https://github.com/nirenjan/x52pro-linux in Go.
