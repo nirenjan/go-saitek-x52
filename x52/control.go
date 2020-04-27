@@ -1,12 +1,32 @@
 package x52
 
 import (
-// "github.com/google/gousb"
+	"github.com/google/gousb"
 )
 
 // Raw sends a raw vendor control packet to the device
 func (ctx *Context) Raw(index, value uint16) error {
-	// TODO: Implement
+	if ctx.device == nil {
+		ctx.log(logWarning, "not connected")
+		return ErrNotConnected(nil)
+	}
+
+	_, err := ctx.device.Control(
+		gousb.ControlVendor|gousb.ControlDevice|gousb.ControlOut,
+		0x91, value, index, nil)
+	if err != nil {
+		ctx.logf(logError, "error updating device: %v", err)
+
+		if err == gousb.ErrorNoDevice {
+			// Device has been unplugged, close it
+			ctx.devClose()
+			ctx.log(logWarning, "device has been disconnected")
+			return ErrNotConnected(err)
+		}
+
+		return err
+	}
+
 	return nil
 }
 

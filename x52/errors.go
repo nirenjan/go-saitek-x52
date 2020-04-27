@@ -44,3 +44,10 @@ func ErrInvalidParam(reason string) *Error {
 		Msg: msg,
 	}
 }
+
+func ErrNotConnected(err error) *Error {
+	return &Error{
+		Msg: "x52: not connected",
+		Err: err,
+	}
+}

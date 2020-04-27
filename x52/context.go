@@ -1,6 +1,7 @@
 package x52
 
 import (
+	"log"
 	"time"
 
 	"github.com/google/gousb"
@@ -21,6 +22,8 @@ const (
 type Context struct {
 	usbContext    *gousb.Context
 	device        *gousb.Device
+	logger        *log.Logger
+	logLevel      int
 	featureFlags  uint32
 	updateMask    uint32
 	ledMask       uint32
@@ -47,6 +50,9 @@ func NewContext() *Context {
 
 // initialize sets defaults in the Context
 func (ctx *Context) initialize() {
+	// Setup the logger
+	ctx.setupLogger()
+
 	// Set timezone on all clocks to UTC
 	for i := 0; i < mfdClocks; i++ {
 		ctx.timeZone[i] = time.UTC
@@ -56,10 +62,7 @@ func (ctx *Context) initialize() {
 // Close closes the context, and any devices that may have been opened will also
 // be closed
 func (ctx *Context) Close() error {
-	if ctx.device != nil {
-		ctx.device.Close()
-		ctx.device = nil
-	}
+	ctx.devClose()
 
 	ctx.initialize()
 
