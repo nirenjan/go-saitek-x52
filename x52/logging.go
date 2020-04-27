@@ -26,15 +26,18 @@ func (ctx *Context) Debug(level int) {
 
 	ctx.logLevel = level
 
-	// Also update the debug level in the USB context
-	ctx.usbContext.Debug(level)
-
 	// If the log level is set to debug, then add the file info to the flags
 	var flags = log.LstdFlags | log.Lmsgprefix
 	if level == logDebug {
 		flags |= log.Lshortfile
 	}
 	ctx.logger.SetFlags(flags)
+}
+
+// DebugUSB changes the debug level of the USB subsystem. Level 0 means no
+// debug, higher levels will print out more debugging information.
+func (ctx *Context) DebugUSB(level int) {
+	ctx.usbContext.Debug(level)
 }
 
 func (ctx *Context) setupLogger() {

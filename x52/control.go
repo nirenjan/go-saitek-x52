@@ -11,6 +11,9 @@ func (ctx *Context) Raw(index, value uint16) error {
 		return ErrNotConnected(nil)
 	}
 
+	// gousb takes care of retries internally, so we don't have to
+	// do it ourselves
+	ctx.logf(logDebug, "sending raw %04x %04x", index, value)
 	_, err := ctx.device.Control(
 		gousb.ControlVendor|gousb.ControlDevice|gousb.ControlOut,
 		0x91, value, index, nil)
@@ -21,6 +24,7 @@ func (ctx *Context) Raw(index, value uint16) error {
 			// Device has been unplugged, close it
 			ctx.devClose()
 			ctx.log(logWarning, "device has been disconnected")
+
 			return ErrNotConnected(err)
 		}
 
@@ -38,11 +42,14 @@ func (ctx *Context) Update() error {
 	var index uint16
 	var err error
 
+	ctx.logf(logDebug, "updated bitmask %08x", updated)
 	for i := updateShift; i < updateMax; i++ {
-		if bitTest(updated, i) {
+		if !bitTest(updated, i) {
 			// Bit is not set
 			continue
 		}
+
+		ctx.log(logDebug, "checking bit", i)
 
 		switch i {
 		case updateShift:
