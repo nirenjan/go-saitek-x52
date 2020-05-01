@@ -2,52 +2,51 @@ package x52
 
 import ()
 
-type Error struct {
-	// Msg is the error message
-	Msg string
-
-	// Err is the underlying wrapped error
-	Err error
+type x52Error struct {
+	msg string
+	err error
 }
 
-func (err *Error) Error() string {
-	output := err.Msg
-	if err.Err != nil {
-		output += ": " + err.Err.Error()
+// x52Error satisfies the error interface
+func (err *x52Error) Error() string {
+	output := err.msg
+	if err.err != nil {
+		output += ": " + err.err.Error()
 	}
 
 	return output
 }
 
-func (err *Error) Unwrap() error {
-	return err.Err
+// Unwrap returns the wrapped error
+func (err *x52Error) Unwrap() error {
+	return err.err
 }
 
-func ErrNotSupported(reason string) *Error {
+func errNotSupported(reason string) *x52Error {
 	msg := "x52: not supported"
 	if len(reason) > 0 {
 		msg += ": " + reason
 	}
 
-	return &Error{
-		Msg: msg,
+	return &x52Error{
+		msg: msg,
 	}
 }
 
-func ErrInvalidParam(reason string) *Error {
+func errInvalidParam(reason string) *x52Error {
 	msg := "x52: invalid parameter"
 	if len(reason) > 0 {
 		msg += ": " + reason
 	}
 
-	return &Error{
-		Msg: msg,
+	return &x52Error{
+		msg: msg,
 	}
 }
 
-func ErrNotConnected(err error) *Error {
-	return &Error{
-		Msg: "x52: not connected",
-		Err: err,
+func errNotConnected(err error) *x52Error {
+	return &x52Error{
+		msg: "x52: not connected",
+		err: err,
 	}
 }

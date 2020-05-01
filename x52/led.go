@@ -8,7 +8,7 @@ func (ctx *Context) SetLed(led LED, state LedState) error {
 	// Make sure that this is a supported device
 	// The non-pro X52 doesn't support setting LED states
 	if !bitTest(ctx.featureFlags, featureLed) {
-		return ErrNotSupported("setting LED state")
+		return errNotSupported("setting LED state")
 	}
 
 	switch led {
@@ -20,37 +20,37 @@ func (ctx *Context) SetLed(led LED, state LedState) error {
 			bitSet(&ctx.ledMask, uint32(led))
 			bitSet(&ctx.updateMask, uint32(led))
 		} else {
-			return ErrNotSupported("invalid state for on/off LED")
+			return errNotSupported("invalid state for on/off LED")
 		}
 
 	case LedA, LedB, LedD, LedE, LedT1, LedT2, LedT3, LedPOV, LedClutch:
-		led_id := uint32(led)
+		ledID := uint32(led)
 		switch state {
 		case LedOff:
-			bitClear(&ctx.ledMask, led_id+0)
-			bitClear(&ctx.ledMask, led_id+1)
+			bitClear(&ctx.ledMask, ledID+0)
+			bitClear(&ctx.ledMask, ledID+1)
 
 		case LedRed:
-			bitSet(&ctx.ledMask, led_id+0)
-			bitClear(&ctx.ledMask, led_id+1)
+			bitSet(&ctx.ledMask, ledID+0)
+			bitClear(&ctx.ledMask, ledID+1)
 
 		case LedAmber:
-			bitSet(&ctx.ledMask, led_id+0)
-			bitSet(&ctx.ledMask, led_id+1)
+			bitSet(&ctx.ledMask, ledID+0)
+			bitSet(&ctx.ledMask, ledID+1)
 
 		case LedGreen:
-			bitClear(&ctx.ledMask, led_id+0)
-			bitSet(&ctx.ledMask, led_id+1)
+			bitClear(&ctx.ledMask, ledID+0)
+			bitSet(&ctx.ledMask, ledID+1)
 
 		default:
-			return ErrNotSupported("invalid state for color LED")
+			return errNotSupported("invalid state for color LED")
 		}
 
-		bitSet(&ctx.updateMask, led_id+0)
-		bitSet(&ctx.updateMask, led_id+1)
+		bitSet(&ctx.updateMask, ledID+0)
+		bitSet(&ctx.updateMask, ledID+1)
 
 	default:
-		return ErrNotSupported("invalid LED identifier")
+		return errNotSupported("invalid LED identifier")
 	}
 
 	return nil

@@ -6,7 +6,7 @@ package x52
 // additional data being silently discarded.
 func (ctx *Context) SetMFDText(line uint8, data []byte) error {
 	if line >= mfdLines {
-		return ErrInvalidParam("line number out of range")
+		return errInvalidParam("line number out of range")
 	}
 
 	// Restrict the data to the line size of the MFD

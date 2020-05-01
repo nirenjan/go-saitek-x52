@@ -118,7 +118,7 @@ func TestMFDText(t *testing.T) {
 	}
 
 	// Test setting an invalid line
-	errInvalid := ErrInvalidParam("line number out of range")
+	errInvalid := errInvalidParam("line number out of range")
 	err := ctx.SetMFDText(3, []byte("foobar"))
 	if err.Error() != errInvalid.Error() {
 		t.Errorf("Mismatch in error strings, exp %v, got %v", errInvalid, err)

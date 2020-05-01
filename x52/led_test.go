@@ -114,7 +114,7 @@ func TestLeds(t *testing.T) {
 					tc.ledMask, tc.updateMask, ctx.ledMask, ctx.updateMask)
 			}
 		} else {
-			experr := ErrNotSupported(tc.errmsg)
+			experr := errNotSupported(tc.errmsg)
 			if experr.Error() != err.Error() {
 				t.Logf("id %v %v\n", i, tc)
 				t.Logf("%#v\n", ctx)

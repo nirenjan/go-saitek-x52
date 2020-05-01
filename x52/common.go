@@ -4,6 +4,7 @@ package x52 // import "nirenjan.org/saitek-x52/x52"
 // ClockID identifies the clock on the X52 multifunction display
 type ClockID uint
 
+// Clock Identifiers
 const (
 	Clock1 ClockID = iota
 	Clock2
@@ -13,6 +14,7 @@ const (
 // ClockFormat describes the time format on the MFD
 type ClockFormat uint
 
+// Clock Format Identifiers
 const (
 	ClockFormat12Hr ClockFormat = iota
 	ClockFormat24Hr
@@ -21,6 +23,7 @@ const (
 // DateFormat describes the date format on the MFD
 type DateFormat uint
 
+// Date Format Identifiers
 const (
 	DateFormatDDMMYY DateFormat = iota
 	DateFormatMMDDYY
@@ -30,6 +33,7 @@ const (
 // LED contains the supported LEDs
 type LED uint
 
+// LED Identifiers
 const (
 	LedFire     = LED(0x01)
 	LedA        = LED(0x02)
@@ -48,6 +52,7 @@ const (
 // of the states
 type LedState uint
 
+// LED State Identifiers
 const (
 	LedOff LedState = iota
 	LedOn

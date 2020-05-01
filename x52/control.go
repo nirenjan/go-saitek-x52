@@ -8,7 +8,7 @@ import (
 func (ctx *Context) Raw(index, value uint16) error {
 	if ctx.device == nil {
 		ctx.log(logWarning, "not connected")
-		return ErrNotConnected(nil)
+		return errNotConnected(nil)
 	}
 
 	// gousb takes care of retries internally, so we don't have to
@@ -25,7 +25,7 @@ func (ctx *Context) Raw(index, value uint16) error {
 			ctx.devClose()
 			ctx.log(logWarning, "device has been disconnected")
 
-			return ErrNotConnected(err)
+			return errNotConnected(err)
 		}
 
 		return err

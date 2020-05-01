@@ -5,10 +5,9 @@ package util
 // recognized by this function are replaced with the replacement byte, otherwise
 // they are dropped from the output
 func ConvertStringToX52Charmap(s string, replace bool, c byte) []byte {
-	r := []rune(s)
-	out := make([]byte, 0, len(r))
-	for i := 0; i < len(r); i++ {
-		ch, ok := charmap[r[i]]
+	out := make([]byte, 0, len(s))
+	for _, r := range s {
+		ch, ok := charmap[r]
 		if !ok && replace {
 			ok = replace
 			ch = c
@@ -21,7 +20,8 @@ func ConvertStringToX52Charmap(s string, replace bool, c byte) []byte {
 	return out
 }
 
-// Replace character for unsupported Unicode character
+// ReplaceMissing is the default replacement character for unsupported Unicode
+// code points
 const ReplaceMissing byte = 0xDB
 
 // Conversion Map for X52 Pro MFD character map
@@ -185,7 +185,7 @@ var charmap = map[rune]byte{
 
 	// Miscellaneous Symbols
 	0x00B7: 0x0D, // MIDDLE DOT
-	0x00AE: 0x0E, // REGISTERD SIGN
+	0x00AE: 0x0E, // REGISTERED SIGN
 	0x00A9: 0x0F, // COPYRIGHT SIGN
 	0x2122: 0x10, // TRADE MARK SIGN
 	0x2020: 0x11, // DAGGER
