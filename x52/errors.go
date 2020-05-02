@@ -1,7 +1,5 @@
 package x52
 
-import ()
-
 type x52Error struct {
 	msg string
 	err error
