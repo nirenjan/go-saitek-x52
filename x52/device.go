@@ -10,6 +10,9 @@ func (ctx *Context) devClose() {
 		ctx.device.Close()
 		ctx.device = nil
 	}
+
+	// Reset any flags that may have been set
+	ctx.featureFlags = 0
 }
 
 const (
@@ -32,17 +35,6 @@ func devSupported(desc *gousb.DeviceDesc) bool {
 	}
 
 	return false
-}
-
-// devSetFlags sets the feature flags based on the product ID
-func (ctx *Context) devSetFlags() {
-	if ctx.device == nil {
-		return
-	}
-
-	if isPro := (ctx.device.Desc.Product == productX52Pro); isPro {
-		bitSet(&ctx.featureFlags, featureLed)
-	}
 }
 
 // Connect will try to connect to a supported X52/X52Pro joystick. If the
@@ -68,25 +60,56 @@ func (ctx *Context) Connect() bool {
 		return false
 	}
 
-	// We have at least 1 device, use the first in the list
-	ctx.device = devlist[0]
+	// We have at least 1 device, use the first in the list, and close
+	// all the others
+	for i, dev := range devlist {
+		if i == 0 {
+			// Pick the first device
+			ctx.logf(logInfo, "Picking device on bus %v, address %v, port %v",
+				dev.Desc.Bus, dev.Desc.Address, dev.Desc.Port)
 
-	// More than 1 matching device
-	if len(devlist) > 1 {
-		ctx.log(logInfo, "found multiple matching devices")
-		// Close all but the first
-		for i, dev := range devlist {
-			if i == 0 {
-				// Pick the first device
-				ctx.logf(logInfo, "Picking device on bus %v, address %v, port %v",
-					dev.Desc.Bus, dev.Desc.Address, dev.Desc.Port)
-			} else {
-				// Close the remaining devices
-				ctx.logf(logInfo, "Closing device on bus %v, address %v, port %v",
-					dev.Desc.Bus, dev.Desc.Address, dev.Desc.Port)
-				defer dev.Close()
+			ctx.device = dev
+
+			// Set flags based on the device
+			if isPro := (ctx.device.Desc.Product == productX52Pro); isPro {
+				bitSet(&ctx.featureFlags, featureLed)
 			}
+		} else {
+			// Close the remaining devices
+			ctx.logf(logInfo, "Closing device on bus %v, address %v, port %v",
+				dev.Desc.Bus, dev.Desc.Address, dev.Desc.Port)
+			defer dev.Close()
 		}
 	}
 	return true
+}
+
+// Raw sends a raw vendor control packet to the device
+func (ctx *Context) Raw(index, value uint16) error {
+	if ctx.device == nil {
+		ctx.log(logWarning, "not connected")
+		return errNotConnected(nil)
+	}
+
+	// gousb takes care of retries internally, so we don't have to
+	// do it ourselves
+	ctx.logf(logDebug, "sending raw %04x %04x", index, value)
+	_, err := ctx.device.Control(
+		gousb.ControlVendor|gousb.ControlDevice|gousb.ControlOut,
+		0x91, value, index, nil)
+	if err != nil {
+		ctx.logf(logError, "error updating device: %v", err)
+
+		if err == gousb.ErrorNoDevice {
+			// Device has been unplugged, close it
+			ctx.devClose()
+			ctx.log(logWarning, "device has been disconnected")
+
+			return errNotConnected(err)
+		}
+
+		return err
+	}
+
+	return nil
 }
