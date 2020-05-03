@@ -48,3 +48,14 @@ func errNotConnected(err error) *x52Error {
 		err: err,
 	}
 }
+
+func errStructCorrupted(reason string) *x52Error {
+	msg := "x52: internal structure corruption"
+	if len(reason) > 0 {
+		msg += ": " + reason
+	}
+
+	return &x52Error{
+		msg: msg,
+	}
+}

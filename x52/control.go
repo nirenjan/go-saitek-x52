@@ -149,3 +149,55 @@ func (ctx *Context) writeLine(line uint8) error {
 
 	return nil
 }
+
+func (ctx *Context) writeDate() error {
+	t, _ := convertTime(ctx.time)
+
+	var dd, mm, yy uint16
+	switch ctx.dateFormat {
+	case DateFormatDDMMYY:
+		dd = uint16(t.day)
+		mm = uint16(t.month)
+		yy = uint16(t.year)
+
+	case DateFormatMMDDYY:
+		mm = uint16(t.day)
+		dd = uint16(t.month)
+		yy = uint16(t.year)
+
+	case DateFormatYYMMDD:
+		yy = uint16(t.day)
+		mm = uint16(t.month)
+		dd = uint16(t.year)
+
+	default:
+		return errStructCorrupted("")
+	}
+
+	ddmm := mm<<8 | dd
+	err := ctx.Raw(0xc4, ddmm)
+	if err != nil {
+		return err
+	}
+
+	return ctx.Raw(0xc8, yy)
+}
+
+func (ctx *Context) writeTime() error {
+	_, t := convertTime(ctx.time)
+
+	cf := uint16(ctx.timeFormat[Clock1])
+	hh := uint16(t.hour)
+	mm := uint16(t.minute)
+
+	value := (cf << 15) | (hh << 8) | mm
+	return ctx.Raw(0xc0, value)
+}
+
+func (ctx *Context) writeOffset(clock ClockID) error {
+	offs := ctx.computeOffset(clock)
+	cf := uint16(ctx.timeFormat[clock])
+	value := (cf << 15) | offs
+	index := uint16(clock) | 0xc0
+	return ctx.Raw(index, value)
+}
