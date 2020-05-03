@@ -42,6 +42,7 @@ func (ctx *Context) DebugUSB(level int) {
 
 func (ctx *Context) setupLogger() {
 	ctx.logger = log.New(os.Stderr, "x52: ", log.LstdFlags)
+	ctx.logLevel = logNone
 }
 
 func (ctx *Context) log(level int, v ...interface{}) {

@@ -53,8 +53,26 @@ func (ctx *Context) initialize() {
 	// Setup the logger
 	ctx.setupLogger()
 
-	// Set timezone on all clocks to UTC
+	// Reset the feature flags
+	ctx.featureFlags = 0
+
+	// Reset the masks
+	ctx.updateMask = 0
+	ctx.ledMask = 0
+
+	// Reset the brightness values to 0
+	ctx.mfdBrightness = 0
+	ctx.ledBrightness = 0
+
+	// Set the time to the zero time
+	ctx.time = time.Time{}
+
+	// Set the date format to DDMMYY
+	ctx.dateFormat = DateFormatDDMMYY
+
+	// Set timezone on all clocks to UTC, and time format to 12 hour
 	for i := 0; i < mfdClocks; i++ {
+		ctx.timeFormat[i] = ClockFormat12Hr
 		ctx.timeZone[i] = time.UTC
 	}
 }
