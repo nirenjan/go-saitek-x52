@@ -112,10 +112,12 @@ func (ctx *Context) Update() error {
 		if err == nil {
 			bitSet(&written, i)
 			bitClear(&updated, i)
+		} else {
+			break
 		}
 	}
 
-	return nil
+	return err
 }
 
 func (ctx *Context) writeLine(line uint8) error {
