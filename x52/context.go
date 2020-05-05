@@ -18,10 +18,19 @@ const (
 	mfdClocks = 3
 )
 
+// usbDevice is an interface that implements the public methods of
+// gousb.Device that are used by the library. This is used for testing
+// the callers of those methods.
+type usbDevice interface {
+	Close() error
+	Control(rType, request uint8, val, idx uint16, data []byte) (int, error)
+	Reset() error
+}
+
 // Context manages all resources related to device handling
 type Context struct {
 	usbContext    *gousb.Context
-	device        *gousb.Device
+	device        usbDevice
 	logger        *log.Logger
 	logLevel      int
 	featureFlags  uint32

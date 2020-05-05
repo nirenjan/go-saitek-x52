@@ -71,7 +71,7 @@ func (ctx *Context) Connect() bool {
 			ctx.device = dev
 
 			// Set flags based on the device
-			if isPro := (ctx.device.Desc.Product == productX52Pro); isPro {
+			if isPro := (dev.Desc.Product == productX52Pro); isPro {
 				bitSet(&ctx.featureFlags, featureLed)
 			}
 		} else {
@@ -82,6 +82,37 @@ func (ctx *Context) Connect() bool {
 		}
 	}
 	return true
+}
+
+func (ctx *Context) checkDisconnect(action string, err error) error {
+	if err != nil {
+		ctx.logf(logError, "error %v device: %v", action, err)
+
+		if err == gousb.ErrorNoDevice {
+			// Device has been unplugged, close it
+			ctx.devClose()
+			ctx.log(logWarning, "device has been disconnected")
+
+			return errNotConnected(err)
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+// Reset resets the connected device. If there is no device connected, it
+// returns errNotConnected, otherwise it will return a corresponding USB
+// error
+func (ctx *Context) Reset() error {
+	if ctx.device == nil {
+		ctx.log(logWarning, "not connected")
+		return errNotConnected(nil)
+	}
+
+	ctx.log(logDebug, "resetting device")
+	return ctx.checkDisconnect("resetting", ctx.device.Reset())
 }
 
 // Raw sends a raw vendor control packet to the device
@@ -97,19 +128,6 @@ func (ctx *Context) Raw(index, value uint16) error {
 	_, err := ctx.device.Control(
 		gousb.ControlVendor|gousb.ControlDevice|gousb.ControlOut,
 		0x91, value, index, nil)
-	if err != nil {
-		ctx.logf(logError, "error updating device: %v", err)
 
-		if err == gousb.ErrorNoDevice {
-			// Device has been unplugged, close it
-			ctx.devClose()
-			ctx.log(logWarning, "device has been disconnected")
-
-			return errNotConnected(err)
-		}
-
-		return err
-	}
-
-	return nil
+	return ctx.checkDisconnect("updating", err)
 }
