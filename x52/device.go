@@ -72,7 +72,7 @@ func (ctx *Context) Connect() bool {
 
 			// Set flags based on the device
 			if isPro := (dev.Desc.Product == productX52Pro); isPro {
-				bitSet(&ctx.featureFlags, featureLed)
+				bitSet(&ctx.featureFlags, FeatureLED)
 			}
 		} else {
 			// Close the remaining devices

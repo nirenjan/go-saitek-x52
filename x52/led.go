@@ -7,7 +7,7 @@ package x52
 func (ctx *Context) SetLed(led LED, state LedState) error {
 	// Make sure that this is a supported device
 	// The non-pro X52 doesn't support setting LED states
-	if !bitTest(ctx.featureFlags, featureLed) {
+	if !ctx.HasFeature(FeatureLED) {
 		return errNotSupported("setting LED state")
 	}
 

@@ -88,11 +88,11 @@ func TestLeds(t *testing.T) {
 	// Check that if the LED feature is not enabled,
 	// then SetLed will return an error
 	if err := ctx.SetLed(LedFire, LedOff); err == nil {
-		t.Error("Setting LED when featureLed is not set does not return an error")
+		t.Error("Setting LED when FeatureLED is not set does not return an error")
 	}
 
 	// Enable setting LEDs
-	bitSet(&ctx.featureFlags, featureLed)
+	bitSet(&ctx.featureFlags, FeatureLED)
 
 	for i, tc := range tests {
 		ctx.ledMask = tc.updateMask

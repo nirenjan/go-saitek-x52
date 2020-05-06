@@ -101,6 +101,11 @@ func (ctx *Context) Close() error {
 	return nil
 }
 
+// HasFeature returns true if the X52 device supports the requested feature
+func (ctx *Context) HasFeature(feature uint32) bool {
+	return bitTest(ctx.featureFlags, feature)
+}
+
 func bitSet(mask *uint32, val uint32) {
 	*mask |= uint32(1 << val)
 }

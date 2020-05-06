@@ -63,7 +63,7 @@ const (
 
 // Feature flags
 const (
-	featureLed uint32 = 1 << iota
+	FeatureLED uint32 = iota
 )
 
 // Update bits
