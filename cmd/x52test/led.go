@@ -74,7 +74,7 @@ func testBlink(ctx *x52.Context) error {
 	bar := progressBar("LED Blink On/Off", 2)
 
 	for i := 0; i < 2; i++ {
-		ctx.SetShift(i == 0)
+		ctx.SetBlink(i == 0)
 		if err := updateDev(ctx, bar); err != nil {
 			return err
 		}
