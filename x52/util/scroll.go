@@ -88,9 +88,9 @@ func (sc *Scroller) Bytes() []byte {
 func (sc *Scroller) Scroll() []byte {
 	if sc.start != sc.end {
 		if sc.start < sc.end {
-			sc.textPos += 1
+			sc.textPos++
 		} else {
-			sc.textPos -= 1
+			sc.textPos--
 		}
 	}
 
