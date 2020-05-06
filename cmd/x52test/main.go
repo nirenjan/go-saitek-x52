@@ -39,6 +39,8 @@ func (tc *TC) Set(v string) error {
 	return nil
 }
 
+var mockTests bool
+
 func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
@@ -46,7 +48,7 @@ func main() {
 		fmt.Fprintln(flag.CommandLine.Output(), "\nAll tests are run if no flags are specified")
 	}
 
-	// flag.Var(&TC{"brightness", 1, nil}, "brightness", "Test brightness scale")
+	flag.BoolVar(&mockTests, "mock", false, "Don't actually run the tests, just simulate the output")
 
 	flag.Parse()
 
@@ -55,8 +57,8 @@ func main() {
 	defer ctx.Close()
 
 	// Make sure that the device is opened
-	if !ctx.Connect() {
-		// return
+	if !mockTests && !ctx.Connect() {
+		return
 	}
 
 	var abortTests bool
@@ -64,7 +66,11 @@ func main() {
 		if abortTests {
 			return
 		}
-		value := f.Value.(*TC)
+		value, ok := f.Value.(*TC)
+		if !ok {
+			return
+		}
+		fmt.Printf("Running %s tests\n", value.name)
 		if err := value.handler(ctx); err != nil {
 			fmt.Printf("%s tests failed: %v\n", value.name, err)
 			fmt.Println("Aborting any remaining tests")

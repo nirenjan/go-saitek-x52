@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/schollz/progressbar/v3 v3.3.3
-	nirenjan.org/saitek-x52 v0.0.0
+	nirenjan.org/saitek-x52 v0.0.0-00010101000000-000000000000
 )
 
 replace nirenjan.org/saitek-x52 => ../..

@@ -4,7 +4,6 @@ package main
 
 import (
 	"flag"
-	"time"
 
 	"nirenjan.org/saitek-x52/x52"
 )
@@ -18,24 +17,20 @@ func testBrightness(ctx *x52.Context) error {
 
 	for i := 0; i < 0x81; i++ {
 		ctx.SetMFDBrightness(uint16(i))
-		err := ctx.Update()
-		if err != nil {
-			bar.Clear()
+		if err := updateDev(ctx, bar); err != nil {
 			return err
 		}
-		time.Sleep(100 * time.Millisecond)
+		delayMs(100)
 		bar.Add(1)
 	}
 
 	bar = progressBar("LED Brightness", 0x81)
 	for i := 0; i < 0x81; i++ {
 		ctx.SetLEDBrightness(uint16(i))
-		err := ctx.Update()
-		if err != nil {
-			bar.Clear()
+		if err := updateDev(ctx, bar); err != nil {
 			return err
 		}
-		time.Sleep(100 * time.Millisecond)
+		delayMs(100)
 		bar.Add(1)
 	}
 
