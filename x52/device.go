@@ -112,6 +112,14 @@ func (ctx *Context) Reset() error {
 	}
 
 	ctx.log(logDebug, "resetting device")
+	var err error
+	for i := 0; i < 3; i++ {
+		err = ctx.device.Reset()
+		if err == nil {
+			break
+		}
+	}
+
 	return ctx.checkDisconnect("resetting", ctx.device.Reset())
 }
 
@@ -122,12 +130,18 @@ func (ctx *Context) Raw(index, value uint16) error {
 		return errNotConnected(nil)
 	}
 
-	// gousb takes care of retries internally, so we don't have to
-	// do it ourselves
-	ctx.logf(logDebug, "sending raw %04x %04x", index, value)
-	_, err := ctx.device.Control(
-		gousb.ControlVendor|gousb.ControlDevice|gousb.ControlOut,
-		0x91, value, index, nil)
+	// gousb takes care of only some retries internally, so we still
+	// need to handle the case where some other error occurs
+	var err error
+	for i := 0; i < 3; i++ {
+		ctx.logf(logDebug, "sending raw %04x %04x", index, value)
+		_, err = ctx.device.Control(
+			gousb.ControlVendor|gousb.ControlDevice|gousb.ControlOut,
+			0x91, value, index, nil)
+		if err == nil {
+			break
+		}
+	}
 
 	return ctx.checkDisconnect("updating", err)
 }
