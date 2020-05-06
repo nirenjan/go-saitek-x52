@@ -15,6 +15,11 @@ func init() {
 }
 
 func testLED(ctx *x52.Context) error {
+	// Run the blink function first
+	if err := testBlink(ctx); err != nil {
+		return err
+	}
+
 	// No point testing the LEDs if the device doesn't support it
 	if !ctx.HasFeature(x52.FeatureLED) && !mockTests {
 		return nil
@@ -60,6 +65,21 @@ func testLED(ctx *x52.Context) error {
 	colorStates := []x52.LedState{x52.LedOff, x52.LedRed, x52.LedAmber, x52.LedGreen}
 	if err := testLED(colorLEDs, colorStates); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func testBlink(ctx *x52.Context) error {
+	bar := progressBar("LED Blink On/Off", 2)
+
+	for i := 0; i < 2; i++ {
+		ctx.SetShift(i == 0)
+		if err := updateDev(ctx, bar); err != nil {
+			return err
+		}
+		delayMs(2000)
+		bar.Add(1)
 	}
 
 	return nil
