@@ -5,6 +5,8 @@ package main // import "nirenjan.org/saitek-x52/cmd/x52test"
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 
@@ -52,6 +54,11 @@ func main() {
 
 	flag.Parse()
 
+	// gousb has an annoying tendency to log interrupts to stderr, and these
+	// mess up the progressbar display. To work around this, we force the log
+	// package to send its output to ioutil.Discard
+	log.SetOutput(ioutil.Discard)
+
 	// Create an X52 context, and connect to the device
 	ctx := x52.NewContext()
 	defer ctx.Close()
@@ -60,6 +67,7 @@ func main() {
 	if !mockTests && !ctx.Connect() {
 		return
 	}
+	defer ctx.Reset()
 
 	var abortTests bool
 	runTests := func(f *flag.Flag) {
