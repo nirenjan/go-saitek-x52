@@ -1,5 +1,71 @@
 package x52
 
+import (
+	"fmt"
+)
+
+// String returns a string representation of the LED
+func (led LED) String() string {
+	switch led {
+	case LedFire:
+		return "Fire"
+
+	case LedA:
+		return "A"
+
+	case LedB:
+		return "B"
+
+	case LedD:
+		return "D"
+
+	case LedE:
+		return "E"
+
+	case LedT1:
+		return "T1"
+
+	case LedT2:
+		return "T2"
+
+	case LedT3:
+		return "T3"
+
+	case LedPOV:
+		return "POV"
+
+	case LedClutch:
+		return "Clutch"
+
+	case LedThrottle:
+		return "Throttle"
+	}
+
+	return fmt.Sprintf("LED(%d)", led)
+}
+
+// String returns a string representation of the LED state
+func (state LedState) String() string {
+	switch state {
+	case LedOff:
+		return "Off"
+
+	case LedOn:
+		return "On"
+
+	case LedRed:
+		return "Red"
+
+	case LedAmber:
+		return "Amber"
+
+	case LedGreen:
+		return "Green"
+	}
+
+	return fmt.Sprintf("State(%d)", state)
+}
+
 // SetLed sets the state of the given LED. Not all LEDs support all states,
 // LedFire and LedThrottle only support LedOn and LedOff states,
 // the remaining LEDs support every state except LedOn.
